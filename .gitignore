@@ -31,3 +31,12 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Node ###
+node/
+node_modules/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+/src/main/resources/public/static/

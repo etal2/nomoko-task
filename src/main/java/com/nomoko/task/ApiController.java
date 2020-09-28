@@ -4,10 +4,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nomoko.task.data.DataPoint;
 import com.nomoko.task.data.DataService;
+import com.nomoko.task.data.Point;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 @RestController()
 @RequestMapping("api")
@@ -16,12 +19,14 @@ public class ApiController {
     @Autowired
     DataService dataService;
 
-    @RequestMapping("/property/value")
-	public DataPoint getPropertyValue() {
+    @RequestMapping(value = "/property/value" )
+	public DataPoint getPropertyValue(@RequestBody Point point) {
+
         DataPoint d = new DataPoint();
-        d.setLat(546565.565);
-        d.setLon(21423523.565);
-        d.setValue(554.67);
+        d.setLat(point.getLat());
+        d.setLon(point.getLon());
+        d.setValue(dataService.getValueAtPoint(point));
+
 		return d;
 	}
 }

@@ -7,8 +7,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,12 +22,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class DataService {
 
-    Dictionary<Point, Double> data = new Hashtable<>() ;
+    Dictionary<Point, Double> data = new Hashtable<>();
 
     public DataService() throws CsvValidationException, IOException, URISyntaxException {
-        
-        List<DataPoint> points = readFile("file.csv");
-        for (DataPoint dataPoint : points) {
+
+        final List<DataPoint> points = readFile("file.csv");
+        for (final DataPoint dataPoint : points) {
             data.put(dataPoint, dataPoint.getValue());
         }
     }
@@ -37,16 +39,16 @@ public class DataService {
         String[] line;
         while ((line = csvReader.readNext()) != null) {
             try {
-                DataPoint dp = parseLine(line);
+                final DataPoint dp = parseLine(line);
                 list.add(dp);
-            } catch (Exception e) {
-                //log error
+            } catch (final Exception e) {
+                // log error
                 System.out.printf("Error reading csv line %d", csvReader.getLinesRead());
             }
         }
         reader.close();
         csvReader.close();
-        
+
         return list;
     }
 
@@ -71,8 +73,18 @@ public class DataService {
         return dp;
     }
 
-    Double getValueAtPoint(Point p) {
-        return data.get(p);
+    Random random = new Random();
+
+    public Double getValueAtPoint(final Point p) {
+        Double result = null;
+        int rnd = random.nextInt(data.size());
+        Enumeration<Double> en = data.elements();
+    
+        for(int i = 0; i < rnd; i++){
+            result = en.nextElement();
+        }
+
+        return result;
     }
 
 }
