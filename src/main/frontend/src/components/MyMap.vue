@@ -1,6 +1,5 @@
 <template>
-
-  <div style="height: 500px;">
+  <b-aspect :aspect="aspect">
     <l-map
       :zoom="zoom"
       :center="center"
@@ -22,7 +21,7 @@
         <l-tooltip :options="tooltipOptions">{{marker.tooltip}}</l-tooltip>
       </l-marker>
     </l-map>
-  </div>
+  </b-aspect>
 </template>
 
 <script>
@@ -49,20 +48,16 @@ export default {
   data() {
     return {
       zoom: 13,
-      center: latLng(47.41322, -1.219482),
+      center: latLng(47.4057257,8.5682659),
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       attribution:
         '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-      withPopup: latLng(47.41322, -1.219482),
-      withTooltip: latLng(47.41422, -1.250482),
-      currentZoom: 11.5,
-      currentCenter: latLng(47.41322, -1.219482),
-      showParagraph: false,
       mapOptions: {
         zoomSnap: 0.5
       },
       markerDetails: [],
-      tooltipOptions: {  permanent: true }
+      tooltipOptions: {  permanent: true },
+      aspect: "2"
     };
   },
   methods: {

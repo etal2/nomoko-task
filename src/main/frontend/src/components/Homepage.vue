@@ -2,7 +2,7 @@
   <b-container class="main">
     <b-form novalidate>
       <b-row class="my-1">
-        <b-col sm="2">
+        <b-col sm="4">
             <b-form-group
               label="Latitude:"
               label-for="latinp"
@@ -13,7 +13,7 @@
               </b-form-invalid-feedback>
             </b-form-group>
         </b-col>
-        <b-col sm="2">
+        <b-col sm="4">
           <b-form-group
               label="Longitude:"
               label-for="loninp"
@@ -24,8 +24,8 @@
             </b-form-invalid-feedback>
           </b-form-group>
         </b-col>
-        <b-col sm="2">
-          <b-button variant="primary" @click="callGetValue()">Estimate Value</b-button>
+        <b-col sm="4">
+          <b-button variant="primary" block @click="callGetValue()">Estimate Value</b-button>
         </b-col>
       </b-row>
     </b-form>
@@ -99,5 +99,13 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+  button{
+    margin-top: 2em;
+  }
+  .main{
+    background-color: whitesmoke;
+  }
+  form{
+    padding-top: 0.5em;
+  }
 </style>
