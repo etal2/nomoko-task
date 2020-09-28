@@ -16,20 +16,21 @@ import java.util.regex.Pattern;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import smile.interpolation.KrigingInterpolation;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DataService {
 
-    Dictionary<Point, Double> data = new Hashtable<>();
+    KrigingInterpolation interpolator;
 
     public DataService() throws CsvValidationException, IOException, URISyntaxException {
 
         final List<DataPoint> points = readFile("file.csv");
-        for (final DataPoint dataPoint : points) {
-            data.put(dataPoint, dataPoint.getValue());
-        }
+
+        interpolator = loadData(points);
     }
 
     List<DataPoint> readFile(final String file) throws IOException, URISyntaxException, CsvValidationException {
@@ -73,18 +74,39 @@ public class DataService {
         return dp;
     }
 
-    Random random = new Random();
+    KrigingInterpolation loadData(List<DataPoint> datapoints){
+        //TODO: need to cleanup data
 
-    public Double getValueAtPoint(final Point p) {
-        Double result = null;
-        int rnd = random.nextInt(data.size());
-        Enumeration<Double> en = data.elements();
-    
-        for(int i = 0; i < rnd; i++){
-            result = en.nextElement();
+        ArrayList<Double> yData = new ArrayList<>();
+        ArrayList<Point> xData = new ArrayList<>();
+        datapoints.forEach( p->{
+            yData.add(p.getValue());
+            xData.add(p);
+        });
+
+        double[][] x = new double[xData.size()][2];
+        double[] y = new double[yData.size()];
+        
+        for(int i = 0; i < yData.size(); i++){
+            y[i] = yData.get(i);
         }
 
-        return result;
+        for(int i = 0; i <xData.size(); i++){
+            Point p = xData.get(i);
+            x[0][i] = p.lat;
+            x[1][i] = p.lon;
+        }
+
+        //TODO: can't get this to work
+        //KrigingInterpolation interpolator = new KrigingInterpolation(x,y);
+        KrigingInterpolation interpolator = null;new KrigingInterpolation(x,y);
+
+        return interpolator;
     }
 
+    public Double getValueAtPoint(final Point p) {
+        //TODO: can't get this to work
+        //return interpolator.interpolate(p.lat, p.lon);
+        return Double.valueOf(6.66);
+    }
 }
