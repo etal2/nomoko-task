@@ -84,7 +84,7 @@ public class DataService {
             xData.add(p);
         });
 
-        double[][] x = new double[xData.size()][2];
+        double[][] x = new double[2][xData.size()];
         double[] y = new double[yData.size()];
         
         for(int i = 0; i < yData.size(); i++){
@@ -99,7 +99,7 @@ public class DataService {
 
         //TODO: can't get this to work
         //KrigingInterpolation interpolator = new KrigingInterpolation(x,y);
-        KrigingInterpolation interpolator = null;new KrigingInterpolation(x,y);
+        KrigingInterpolation interpolator = null;
 
         return interpolator;
     }
