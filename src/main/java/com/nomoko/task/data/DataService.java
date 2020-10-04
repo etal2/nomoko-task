@@ -1,5 +1,6 @@
 package com.nomoko.task.data;
 
+import java.io.Console;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URISyntaxException;
@@ -8,11 +9,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.DoubleStream;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
@@ -29,8 +32,8 @@ public class DataService {
     public DataService() throws CsvValidationException, IOException, URISyntaxException {
 
         final List<DataPoint> points = readFile("file.csv");
-
-        interpolator = loadData(points);
+        final List<DataPoint> clean = cleanData(points);
+        interpolator = loadData(clean);
     }
 
     List<DataPoint> readFile(final String file) throws IOException, URISyntaxException, CsvValidationException {
@@ -74,39 +77,49 @@ public class DataService {
         return dp;
     }
 
-    KrigingInterpolation loadData(List<DataPoint> datapoints){
-        //TODO: need to cleanup data
+    List<DataPoint> cleanData(List<DataPoint> datapoints){
 
-        ArrayList<Double> yData = new ArrayList<>();
-        ArrayList<Point> xData = new ArrayList<>();
-        datapoints.forEach( p->{
-            yData.add(p.getValue());
-            xData.add(p);
+        //Group duplicate points
+        HashMap<Point, List<Double>> hmap = new HashMap<Point, List<Double>>();
+        datapoints.forEach( dp->{
+            Point p = new Point(dp);
+            var values = hmap.getOrDefault(p, new ArrayList<Double>());
+            values.add(dp.getValue());
+            hmap.put(p, values);
         });
 
-        double[][] x = new double[2][xData.size()];
-        double[] y = new double[yData.size()];
+        //Avg value at each position
+        List<DataPoint> clean = new ArrayList<>();
+        hmap.forEach((point,values) -> {
+            Double val = values.stream().reduce(0.0, Double::sum) / values.size();
+            DataPoint dp = new DataPoint(point, val);
+            clean.add(dp);
+        });
+
+        return clean;
+    }
+
+    KrigingInterpolation loadData(List<DataPoint> datapoints){
+
+        int datasize = datapoints.size();
+        double[][] x = new double[datasize][2];
+        double[] y = new double[datasize];
+        int i = 0;
+
+        for(DataPoint p : datapoints) {
+            y[i] = p.getValue();
+            x[i][0] = p.lat;
+            x[i][1] = p.lon;
+            i++;
+        };
+
+        KrigingInterpolation interpolator = new KrigingInterpolation(x,y);
         
-        for(int i = 0; i < yData.size(); i++){
-            y[i] = yData.get(i);
-        }
-
-        for(int i = 0; i <xData.size(); i++){
-            Point p = xData.get(i);
-            x[0][i] = p.lat;
-            x[1][i] = p.lon;
-        }
-
-        //TODO: can't get this to work
-        //KrigingInterpolation interpolator = new KrigingInterpolation(x,y);
-        KrigingInterpolation interpolator = null;
-
         return interpolator;
     }
 
     public Double getValueAtPoint(final Point p) {
-        //TODO: can't get this to work
-        //return interpolator.interpolate(p.lat, p.lon);
-        return Double.valueOf(6.66);
+        return interpolator.interpolate(p.lat, p.lon);
+        //return Double.valueOf(6.66);
     }
 }

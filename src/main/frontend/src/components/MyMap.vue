@@ -70,7 +70,7 @@ export default {
         color: Math.random() > 0.5 ? 'red' : 'blue',
         fillColor: '#f03',
         fillOpacity: Math.random(),
-        tooltip: "Value: " + datapoint.value,
+        tooltip: "Value: " + datapoint.value.toFixed(2),
         permanenttip: true
       });
     },
